@@ -17,6 +17,7 @@ public class SecurityConfig {
     public SecurityWebFilterChain securityWebFilterChain(
             ServerHttpSecurity http,
             AdminAuthenticationWebFilter adminAuthenticationWebFilter,
+            JwtAuthenticationWebFilter jwtAuthenticationWebFilter,
             @Value("${app.admin.base-path}") String adminBasePath,
             @Value("${app.admin.role}") String adminRole
     ) {
@@ -29,10 +30,11 @@ public class SecurityConfig {
                         exchange -> exchange
                                 .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()            // Allow options request (for preflight cors)
                                 .pathMatchers(loginPathMatcher).permitAll()                       // Login route, allow all
-                                .pathMatchers(adminPathMatchers).hasRole(adminCleanRole)          // Admin routes, need admin role
-                                .anyExchange().permitAll()                                        // Any others, processed as public, the redirected service is the one that handles its own auth
+                                                                .pathMatchers(adminPathMatchers).hasRole(adminCleanRole)          // Admin routes, need admin role
+                                                                .anyExchange().permitAll()                                        // Any others, processed as public; JWT enforcement applied only on proxied routes by the filter
                 )
-                .addFilterAt(adminAuthenticationWebFilter, SecurityWebFiltersOrder.AUTHENTICATION) //Add admin filter
+                                .addFilterAt(adminAuthenticationWebFilter, SecurityWebFiltersOrder.AUTHENTICATION) //Add admin filter
+                                .addFilterAt(jwtAuthenticationWebFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .build();
     }
 }

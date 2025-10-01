@@ -28,6 +28,8 @@ dependencies {
     //security
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    // JWT / JWK support
+    implementation 'com.nimbusds:nimbus-jose-jwt:9.31'
 
     //DB
     implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
